@@ -1,0 +1,155 @@
+# Offer Builder System
+
+This rule provides context for working with the offer builder system in benefits-svc.
+
+## Overview
+
+The Offer Builder is a **data-driven UI system** for creating offers/rewards. It operates independently of Journey Builder but can be embedded within journeys.
+
+For detailed guides, see `offer-builder/*.md` in this workspace.
+
+## Key Tables
+
+| Table | Purpose |
+|-------|---------|
+| `synthetic_reward_types` | What reward types exist (comped item, discount, ride credit) |
+| `offer_builder_flows` | Which steps for a reward_type × platform × audience_type |
+| `offer_builder_flow_steps` | Links flows to steps with ordering |
+| `offer_builder_steps` | Reusable step definitions (step_type, default_title) |
+| `offer_builder_flow_step_elements` | Links flow_steps to elements |
+| `offer_builder_elements` | Input field definitions |
+| `offer_builder_element_options` | Dropdown/switch options |
+
+## Common Synthetic Reward Types
+
+| UUID | internal_name | value_type | category |
+|------|---------------|------------|----------|
+| `dce31367-c854-41ba-b855-541bdcfd5874` | dining_complimentary_item | REDEEM_DOLLAR_CREDIT | DINING |
+| `2d74ce67-a928-4ffd-9536-dc7d2f14ba30` | neighborhood_discount | EARN_DOLLAR_CREDIT | DINING |
+| `5828f406-c7fe-4125-ab3b-d594a8d0a0a7` | complimentary_rideshare_credit | REDEEM_DOLLAR_CREDIT | RIDESHARE |
+| `6f8e9d7c-5b4a-4392-a1b2-c3d4e5f6a7b8` | home_incentive_bundled_reward | EARN_DOLLAR_CREDIT | HOME |
+| `c9e7f5a3-2d4b-4c6e-8f9a-1b2c3d4e5f6a` | home_incentive_earn_points | EARN_POINTS | HOME |
+
+## Common Step Types
+
+| step_type | Purpose |
+|-----------|---------|
+| `reward_selection` | Select comped item from menu |
+| `reward_creation` | Configure discount/credit amount |
+| `audience_definition` | Select audience (standalone flows) |
+| `program_settings` | Redemption limits, duration |
+| `messaging` | Checkout message (discounts) |
+| `item_messaging` | SMS for comped item delivery |
+| `messaging_sms` | SMS message step |
+| `confirmation` | Review before creating |
+| `success_handoff` | Success screen |
+
+## Common Element Types
+
+| internal_type | Purpose |
+|---------------|---------|
+| `switch` | Toggle between options |
+| `number` | Numeric input |
+| `text` | Single-line text |
+| `text_box` | Multi-line text |
+| `select` | Dropdown |
+| `datetime` | Date/time picker |
+| `tag_selector` | Tag selection |
+| `display_block` | Info display |
+| `button` | Action button |
+
+## API Endpoints
+
+```
+GET /portal-gateway/v1/offer-builder/synthetic-reward-types?issuerType={type}
+GET /portal-gateway/v1/offer-builder/flows?rewardTypeId={uuid}&platform={platform}&audienceType={type}
+```
+
+## Diagnostic Queries
+
+### View all flows for a reward type
+```sql
+SELECT f.id, f.platform, f.audience_type
+FROM offer_builder_flows f
+WHERE f.synthetic_reward_type_id = 'your-uuid';
+```
+
+### View complete flow structure
+```sql
+SELECT 
+    f.platform,
+    f.audience_type,
+    fs.step_order,
+    s.step_type,
+    s.default_title,
+    e.internal_name,
+    e.internal_type,
+    fse.element_order
+FROM offer_builder_flows f
+JOIN offer_builder_flow_steps fs ON f.id = fs.flow_id
+JOIN offer_builder_steps s ON fs.step_id = s.id
+LEFT JOIN offer_builder_flow_step_elements fse ON fs.id = fse.flow_step_id
+LEFT JOIN offer_builder_elements e ON fse.element_id = e.id
+WHERE f.synthetic_reward_type_id = 'your-uuid'
+ORDER BY f.platform, f.audience_type, fs.step_order, fse.element_order;
+```
+
+### Check what step types exist
+```sql
+SELECT id, step_type, default_title FROM offer_builder_steps ORDER BY step_type;
+```
+
+### Check what elements exist
+```sql
+SELECT id, internal_name, internal_type, default_label 
+FROM offer_builder_elements 
+ORDER BY internal_type, internal_name;
+```
+
+## Creating a New Flow
+
+### 1. Create the flow
+```sql
+INSERT INTO offer_builder_flows (id, synthetic_reward_type_id, platform, audience_type)
+VALUES ('uuid', 'reward-type-uuid', 'mobile', 'full_journey');
+```
+
+### 2. Add steps
+```sql
+INSERT INTO offer_builder_flow_steps 
+    (id, flow_id, step_id, step_order, is_required, is_skip_allowed, is_visible)
+VALUES
+    ('uuid', 'flow-uuid', (SELECT id FROM offer_builder_steps WHERE step_type = 'reward_creation'), 1, true, true, true);
+```
+
+### 3. Add elements to steps
+```sql
+INSERT INTO offer_builder_flow_step_elements
+    (id, flow_step_id, element_id, element_order, is_required, is_visible)
+VALUES
+    ('uuid', 'flow-step-uuid', (SELECT id FROM offer_builder_elements WHERE internal_name = 'discount_amount'), 1, true, true);
+```
+
+## Journey Integration
+
+When offer builder is used within a journey:
+- Journey flow step has `template_type = 'OFFER'`
+- Journey step's `builder_entrypoint` points to offer builder API
+- Use `audience_type = 'full_journey'` for journey-aware flows
+- Journey flows typically have `is_skip_allowed = true`
+- Journey flows usually omit `confirmation` and `success_handoff` steps
+
+## Important Notes
+
+1. **`item_messaging` is for comped items only** - It sends SMS when item is delivered
+2. **`messaging` is for discounts** - It shows message at checkout
+3. **`full_journey` flows** should have skip buttons and journey guidance
+4. **`full` flows** are standalone and have audience/confirmation/success steps
+5. **issuer_type filters** which reward types appear: `DINING`, `HOME`, `RIDESHARE`
+
+## File References
+
+| Topic | File |
+|-------|------|
+| Architecture | `offer-builder/01-architecture.md` |
+| Adding reward types | `offer-builder/02-adding-a-reward-type.md` |

@@ -1,0 +1,52 @@
+# Workspace Setup
+
+This rule describes how to set up this Cursor workspace for new collaborators.
+
+## MCP Server Configuration
+
+MCP (Model Context Protocol) settings are stored at the **user level** (`~/.cursor/mcp.json`), not in the workspace. Each collaborator must configure MCP servers individually.
+
+### Setup Files Location
+
+- `setup/MCP_SETUP.md` - Full documentation for each MCP server
+- `setup/mcp.json.example` - Template file (copy to `~/.cursor/mcp.json`)
+
+### Required MCP Servers
+
+| Server | Purpose |
+|--------|---------|
+| Linear | Issue tracking - access Linear issues and projects |
+| Notion | Documentation - search PRDs, specs, and team docs |
+| Slack | Communication - search channels and messages |
+| Figma Desktop | Design - access Figma files and generate code |
+
+### Optional MCP Servers
+
+| Server | Purpose |
+|--------|---------|
+| Devin | AI agent for delegating complex tasks |
+
+## Quick Setup for New Users
+
+When helping a new collaborator set up this workspace:
+
+1. Have them copy the example config:
+   ```bash
+   cp setup/mcp.json.example ~/.cursor/mcp.json
+   ```
+
+2. They need to obtain credentials for:
+   - Slack: Bot token, user token, and team ID from https://api.slack.com/apps
+   - Devin (optional): API key from their Devin account
+
+3. Linear, Notion, and Figma authenticate via browser on first use
+
+4. Restart Cursor after updating `~/.cursor/mcp.json`
+
+## Troubleshooting
+
+If MCP servers aren't working:
+- Check `~/.cursor/mcp.json` exists and has valid JSON
+- Verify credentials are correct (no trailing spaces)
+- For Slack: ensure `npx` is available at the configured path
+- Restart Cursor after any config changes

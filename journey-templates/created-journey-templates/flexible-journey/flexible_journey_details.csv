@@ -1,0 +1,35 @@
+,,
+Screen,Field,flexible_journey
+PRESETS,,
+Audience selection presets,Audience filter preset,N/A
+Campaign presets,Type,N/A
+Campaign presets,Trigger,N/A
+Campaign presets,Scheduling option,N/A
+Campaign presets,Sending option,N/A
+Campaign presets,Campaign message body,N/A
+Offer presets,Reward type selection,N/A
+Offer presets,Show follow-up message,N/A
+Offer presets,Follow-up message,N/A
+SCREEN COPY,,
+Journey selection screen,Journey preview image,
+Journey selection screen,Short title,Build a custom guest experience
+Journey selection screen,Preview description,"Create a custom experience by choosing your selected guests, the experience you want to offer, and how you'd like to welcome them in."
+Journey step screen,Journey background image,
+Journey step screen,Long title,Build a custom guest experience
+Journey step screen,Full description,"Create a custom experience by choosing your selected guests, the experience you want to offer, and how you'd like to welcome them in."
+Journey step screen,Audience badge copy,Audience
+Journey step screen,Audience body,"Reach out to valued guests based on visits, spend, tags, and more."
+Journey step screen,Step 1 badge icon,
+Journey step screen,Step 1 badge copy,Before: Invite guests in
+Journey step screen,Step 1 body,Send a personalized message inviting or welcoming guests to your restaurant
+Journey step screen,Step 2 badge icon,
+Journey step screen,Step 2 badge copy,During: Deliver a guest experience
+Journey step screen,Step 2 body,Choose which experience you'd like to automatically offer these guests to make them feel special.
+,,
+Journey step screen,Step 3 badge copy,After: Thanks guests
+Journey step screen,Step 3 body,Send a note to thank guests for visiting and inviting them back in.
+Journey step screen,Action button text,
+GUIDANCE BOX COPY IN BUILDERS,,
+Guidance box in Audience,journey_guidance_audience_creator,
+Guidance box in Campaign Builder,journey_guidance_campaign_builder,
+Guidance box in Offer Builder,journey_guidance_offer_builder,

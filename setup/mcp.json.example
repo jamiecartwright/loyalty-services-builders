@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "linear": {
+      "url": "https://mcp.linear.app/sse"
+    },
+    "Notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "headers": {}
+    },
+    "Figma Desktop": {
+      "url": "http://127.0.0.1:3845/mcp",
+      "headers": {}
+    },
+    "slack": {
+      "command": "/opt/homebrew/bin/npx",
+      "args": ["-y", "@modelcontextprotocol/server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-YOUR-BOT-TOKEN",
+        "SLACK_USER_TOKEN": "xoxp-YOUR-USER-TOKEN",
+        "SLACK_TEAM_ID": "YOUR-TEAM-ID",
+        "NPM_CONFIG_UPDATE_NOTIFIER": "false",
+        "PATH": "/opt/homebrew/bin:/usr/bin:/bin"
+      }
+    },
+    "devin": {
+      "url": "https://mcp.devin.ai/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR-DEVIN-API-KEY"
+      }
+    }
+  }
+}
